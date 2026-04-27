@@ -165,7 +165,14 @@
                 // Клик по короткой ссылке - переход
                 shortUrlDiv.style.cursor = 'pointer';
                 shortUrlDiv.onclick = () => {
-                    window.open(shortUrl, '_blank');
+
+                const textarea = document.createElement('textarea');
+                 textarea.value = shortUrl;
+                 document.body.appendChild(textarea);
+                 textarea.select();
+                 document.execCommand('copy');
+                 document.body.removeChild(textarea);
+                 alert('Скопировано!');
                 };
                 
             } catch (err) {

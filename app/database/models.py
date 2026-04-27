@@ -11,3 +11,4 @@ class ShortUrl(Base):
 
     slug: Mapped[str] = mapped_column(primary_key=True)
     long_url: Mapped[str]
+    user_id: Mapped[str]

@@ -9,11 +9,13 @@ from ..exeptions import SlugAlreadyExistsError
 async def add_slug_to_db(
         slug: str,
         url: str,
+        user_id: str
 ):
     async with new_session() as session:
         new_slug = ShortUrl(
             slug=slug,
-            long_url=url
+            long_url=url,
+            user_id = user_id
         )
         session.add(new_slug)
         try:

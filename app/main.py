@@ -13,6 +13,7 @@ from .database.db import engine
 from .database.models import Base
 from .exeptions import NoLongUrlFoundError, SlugAlreadyExistsError
 from .service import generate_rnd_short_url, get_url_by_slug
+from .dependencies.dependencies import get_or_create_user_id
 
 
 @asynccontextmanager
@@ -34,12 +35,12 @@ async def root():
 
 
 @app.post("/generate_short_url")
-async def generate_short_url(url: str = Body(embed=True)):
+async def generate_short_url(url: str = Body(embed=True),
+                             user_id: str = Depends(get_or_create_user_id)):
     try:
-        new_slug = await generate_rnd_short_url(url)
+        new_slug = await generate_rnd_short_url(url, user_id)
     except SlugAlreadyExistsError:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Не удалось сгенерировать слаг")
-    print(new_slug)
     return {"data": new_slug}
 
 

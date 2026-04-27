@@ -4,13 +4,15 @@ from .exeptions import NoLongUrlFoundError, SlugAlreadyExistsError
 
 
 async def generate_rnd_short_url(
-        url: str
+        url: str,
+        user_id: str
 ) -> str:
     async def generate_slug_and_add_to_db():
         slug = generate_slug()
-        await add_slug_to_db(slug, url)
+        await add_slug_to_db(slug, url, user_id)
         return slug
     for attempt in range(5):
+        print(1)
         try:
             slug = await generate_slug_and_add_to_db()
         except SlugAlreadyExistsError as ex:
