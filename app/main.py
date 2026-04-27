@@ -12,7 +12,7 @@ from pydantic import HttpUrl
 from .database.db import engine
 from .database.models import Base
 from .exeptions import NoLongUrlFoundError, SlugAlreadyExistsError
-from .service import generate_rnd_short_url, get_url_by_slug
+from .service import generate_rnd_short_url, get_url_by_slug, delete_slug, get_user_slugs
 from .dependencies.dependencies import get_or_create_user_id
 
 
@@ -42,6 +42,17 @@ async def generate_short_url(url: str = Body(embed=True),
     except SlugAlreadyExistsError:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Не удалось сгенерировать слаг")
     return {"data": new_slug}
+
+
+@app.get("/my_slugs")
+async def get_slugs(user_id: str = Depends(get_or_create_user_id)):
+    return await get_user_slugs(user_id)
+
+
+@app.delete("/delete_slug/{slug}")
+async def delete_slug_by_user(slug: str,
+                              user_id: str = Depends(get_or_create_user_id)):
+    await delete_slug(slug, user_id)
 
 
 @app.get("/{slug}")

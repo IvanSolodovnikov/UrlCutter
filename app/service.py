@@ -1,4 +1,4 @@
-from .database.crud import add_slug_to_db, get_long_url_by_slug_from_db
+from .database.crud import add_slug_to_db, get_long_url_by_slug_from_db, delete_slug_by_user_id, get_all_slugs_by_user_id
 from .shortener import generate_slug
 from .exeptions import NoLongUrlFoundError, SlugAlreadyExistsError
 
@@ -12,9 +12,9 @@ async def generate_rnd_short_url(
         await add_slug_to_db(slug, url, user_id)
         return slug
     for attempt in range(5):
-        print(1)
         try:
             slug = await generate_slug_and_add_to_db()
+            break
         except SlugAlreadyExistsError as ex:
             if attempt == 4:
                 raise SlugAlreadyExistsError from ex
@@ -25,3 +25,12 @@ async def get_url_by_slug(slug: str) -> str | None:
     if not long_url:
         raise NoLongUrlFoundError()
     return long_url
+
+async  def delete_slug(slug: str,
+                       user_id: str):
+    await delete_slug_by_user_id(slug, user_id)
+
+
+async def get_user_slugs(user_id: str) -> list[dict]:
+    slugs = await get_all_slugs_by_user_id(user_id)
+    return [{"slug": s.slug, "long_url": s.long_url} for s in slugs]

@@ -1,208 +1,343 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Сокращатель ссылок</title>
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #f5f5f5;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-        .container {
-            background: white;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            width: 100%;
-            max-width: 500px;
-        }
-        h1 {
-            text-align: center;
-            margin-bottom: 30px;
-            color: #333;
-        }
-        .form-group {
-            margin-bottom: 20px;
-        }
-        label {
-            display: block;
-            margin-bottom: 8px;
-            color: #555;
-            font-weight: 500;
-        }
-        input[type="url"] {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 16px;
-            transition: border-color 0.2s;
-        }
-        input[type="url"]:focus {
-            outline: none;
-            border-color: #007bff;
-        }
-        button {
-            width: 100%;
-            padding: 14px;
-            background: #007bff;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        button:hover {
-            background: #0056b3;
-        }
-        button:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-        }
-        .result {
-            margin-top: 20px;
-            padding: 15px;
-            background: #e7f3ff;
-            border-radius: 6px;
-            display: none;
-        }
-        .result.show {
-            display: block;
-        }
-        .result-label {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 8px;
-        }
-        .result-url {
-            word-break: break-all;
-            color: #007bff;
-            font-weight: 500;
-        }
-        .error {
-            margin-top: 20px;
-            padding: 15px;
-            background: #ffe7e7;
-            border-radius: 6px;
-            color: #d00;
-            display: none;
-        }
-        .error.show {
-            display: block;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Сокращение ссылок</title>
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #f5f5f5;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 30px;
+}
+
+.main-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+}
+
+@media (max-width: 768px) {
+    .main-content {
+        grid-template-columns: 1fr;
+    }
+}
+
+.panel {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.panel h2 {
+    color: #555;
+    margin-bottom: 20px;
+    font-size: 18px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.generate-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.generate-form input {
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.generate-form button {
+    padding: 12px 24px;
+    background: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.generate-form button:hover {
+    background: #45a049;
+}
+
+#copyBtn {
+    background: #2196F3;
+}
+
+#copyBtn:hover {
+    background: #1976D2;
+}
+
+.slugs-list {
+    list-style: none;
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.slug-item {
+    background: #f9f9f9;
+    padding: 12px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: background 0.2s;
+}
+
+.slug-item:hover {
+    background: #f0f0f0;
+}
+
+.slug-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.short-url {
+    font-weight: bold;
+    color: #2196F3;
+    cursor: pointer;
+    text-decoration: underline;
+    font-size: 14px;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.short-url:hover {
+    color: #1976D2;
+}
+
+.long-url {
+    font-size: 12px;
+    color: #666;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+}
+
+.delete-btn {
+    padding: 6px 12px;
+    background: #f44336;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: background 0.2s;
+    flex-shrink: 0;
+}
+
+.delete-btn:hover {
+    background: #da190b;
+}
+
+.empty {
+    text-align: center;
+    color: #999;
+    padding: 30px;
+    font-size: 14px;
+}
+
+.toast {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #333;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+    z-index: 1000;
+}
+
+.toast.show {
+    opacity: 1;
+}
+
+.toast.success {
+    background: #4CAF50;
+}
+
+.toast.error {
+    background: #f44336;
+}
+</style>
 </head>
 <body>
-    <div class="container">
-        <h1>🔗 Сокращатель ссылок</h1>
-        <div class="form-group">
-            <label for="urlInput">Введите длинный URL</label>
-            <input type="url" id="urlInput" placeholder="https://example.com/very/long/url..." required>
-        </div>
-        <button id="shortenBtn">Сократить ссылку</button>
-        
-        <div class="result" id="result">
-            <div class="result-label">Ваша короткая ссылка:</div>
-            <div class="result-url" id="shortUrl"></div>
-        </div>
-        
-        <div class="error" id="error"></div>
-    </div>
+<div class="container">
+<h1>🔗 Сокращение ссылок</h1>
 
-    <script>
-        const urlInput = document.getElementById('urlInput');
-        const shortenBtn = document.getElementById('shortenBtn');
-        const resultDiv = document.getElementById('result');
-        const shortUrlDiv = document.getElementById('shortUrl');
-        const errorDiv = document.getElementById('error');
+<div class="main-content">
+<div class="panel">
+<h2>➕ Создать ссылку</h2>
+<form class="generate-form" id="generateForm">
+<input type="url" id="urlInput" placeholder="Введите длинную ссылку (https://...)" required>
+<button type="submit">Сократить</button>
+<button type="button" id="copyBtn" style="display: none;">Копировать</button>
+</form>
+</div>
 
-        async function shortenUrl() {
-            const url = urlInput.value.trim();
-            
-            if (!url) {
-                showError('Пожалуйста, введите URL');
-                return;
-            }
+<div class="panel">
+<h2>📋 Мои ссылки</h2>
+<ul class="slugs-list" id="slugsList"></ul>
+</div>
+</div>
+</div>
 
-            shortenBtn.disabled = true;
-            shortenBtn.textContent = 'Сокращаем...';
-            hideError();
-            hideResult();
+<div class="toast" id="toast"></div>
 
-            try {
-                const response = await fetch('/generate_short_url', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ url: url })
-                });
+<script>
+const API_URL = window.location.origin;
+let lastShortUrl = '';
 
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.detail || 'Ошибка при сокращении ссылки');
-                }
+// Загрузка слагов
+async function loadSlugs() {
+    try {
+        const response = await fetch(`${API_URL}/my_slugs`);
+        const slugs = await response.json();
+        renderSlugs(slugs);
+    } catch (e) {
+        console.error('Ошибка загрузки:', e);
+    }
+}
 
-                const data = await response.json();
-                const shortSlug = data.data;
-                const shortUrl = `${window.location.origin}/${shortSlug}`;
-                
-                shortUrlDiv.textContent = shortUrl;
-                resultDiv.classList.add('show');
-                
-                // Клик по короткой ссылке - переход
-                shortUrlDiv.style.cursor = 'pointer';
-                shortUrlDiv.onclick = () => {
+// Отрисовка слагов
+function renderSlugs(slugs) {
+    const list = document.getElementById('slugsList');
+    
+    if (slugs.length === 0) {
+        list.innerHTML = '<li class="empty">Ссылок пока нет</li>';
+        return;
+    }
+    
+    list.innerHTML = slugs.map(slug => `
+        <li class="slug-item">
+            <div class="slug-info">
+                <span class="short-url" onclick="copyShortUrl('${slug.slug}')" title="Нажмите, чтобы скопировать">${API_URL}/${slug.slug}</span>
+                <span class="long-url" title="${escapeHtml(slug.long_url)}">${escapeHtml(slug.long_url)}</span>
+            </div>
+            <button class="delete-btn" onclick="deleteSlug('${slug.slug}')">Удалить</button>
+        </li>
+    `).join('');
+}
 
-                const textarea = document.createElement('textarea');
-                 textarea.value = shortUrl;
-                 document.body.appendChild(textarea);
-                 textarea.select();
-                 document.execCommand('copy');
-                 document.body.removeChild(textarea);
-                 alert('Скопировано!');
-                };
-                
-            } catch (err) {
-                showError(err.message);
-            } finally {
-                shortenBtn.disabled = false;
-                shortenBtn.textContent = 'Сократить ссылку';
-            }
-        }
+// Экранирование HTML
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
 
-        function showError(message) {
-            errorDiv.textContent = message;
-            errorDiv.classList.add('show');
-        }
+// Показать уведомление
+function showToast(message, type = 'success') {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.className = 'toast show ' + type;
+    setTimeout(() => toast.classList.remove('show'), 2500);
+}
 
-        function hideError() {
-            errorDiv.classList.remove('show');
-        }
+// Копирование короткой ссылки
+function copyShortUrl(slug) {
+    const shortUrl = `${API_URL}/${slug}`;
+    navigator.clipboard.writeText(shortUrl).then(() => {
+        showToast('Ссылка скопирована!', 'success');
+    }).catch(() => {
+        showToast('Не удалось скопировать', 'error');
+    });
+}
 
-        function hideResult() {
-            resultDiv.classList.remove('show');
-        }
-
-        shortenBtn.addEventListener('click', shortenUrl);
-        
-        urlInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                shortenUrl();
-            }
+// Копирование последней созданной ссылки
+document.getElementById('copyBtn').addEventListener('click', () => {
+    if (lastShortUrl) {
+        navigator.clipboard.writeText(lastShortUrl).then(() => {
+            showToast('Ссылка скопирована!', 'success');
+        }).catch(() => {
+            showToast('Не удалось скопировать', 'error');
         });
-    </script>
+    }
+});
+
+// Создание короткой ссылки
+document.getElementById('generateForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const input = document.getElementById('urlInput');
+    const url = input.value.trim();
+    
+    if (!url) return;
+    
+    try {
+        const response = await fetch(`${API_URL}/generate_short_url`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ url: url })
+        });
+        
+        if (response.ok) {
+            const result = await response.json();
+            lastShortUrl = `${API_URL}/${result.data}`;
+            document.getElementById('copyBtn').style.display = 'block';
+            showToast(`Ссылка создана: ${lastShortUrl}`, 'success');
+            loadSlugs();
+        } else {
+            const error = await response.json();
+            showToast(error.detail || 'Ошибка', 'error');
+        }
+    } catch (e) {
+        showToast('Ошибка сети', 'error');
+    }
+});
+
+// Удаление ссылки
+async function deleteSlug(slug) {
+    if (!confirm('Удалить эту ссылку?')) return;
+    
+    try {
+        const response = await fetch(`${API_URL}/delete_slug/${slug}`, {
+            method: 'DELETE'
+        });
+        
+        if (response.ok) {
+            showToast('Ссылка удалена', 'success');
+            loadSlugs();
+        } else {
+            showToast('Не удалось удалить', 'error');
+        }
+    } catch (e) {
+        showToast('Ошибка сети', 'error');
+    }
+}
+
+// Загрузка при старте
+loadSlugs();
+</script>
 </body>
 </html>
