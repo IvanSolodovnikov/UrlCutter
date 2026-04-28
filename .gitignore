@@ -1,7 +1,6 @@
 .venv
 uv.lock
-docker-compose.yaml
-pyproject.toml
 .idea
 app/__pycache__
 __pycache__/
+.gitignore

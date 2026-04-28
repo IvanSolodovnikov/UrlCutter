@@ -1,0 +1,12 @@
+[project]
+name = "urlcutter"
+version = "0.1.0"
+description = "Add your description here"
+requires-python = ">=3.13"
+dependencies = [
+    "asyncpg>=0.31.0",
+    "fastapi",
+    "greenlet>=3.3.1",
+    "sqlalchemy>=2.0.46",
+    "uvicorn",
+]
