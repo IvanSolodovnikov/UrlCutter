@@ -6,211 +6,365 @@
 <title>Сокращение ссылок</title>
 <style>
 * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
+ box-sizing: border-box;
+ margin:0;
+ padding:0;
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: #f5f5f5;
-    min-height: 100vh;
-    padding: 20px;
+ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+ background: #f5f5f5;
+ min-height:100vh;
+ padding:20px;
 }
 
 .container {
-    max-width: 1000px;
-    margin: 0 auto;
+ max-width:1000px;
+ margin:0 auto;
 }
 
 h1 {
-    text-align: center;
-    color: #333;
-    margin-bottom: 30px;
+ text-align: center;
+ color: #333;
+ margin-bottom:30px;
 }
 
+/* Кнопка входа админа */
+.admin-login-btn {
+ position: absolute;
+ top:20px;
+ right:20px;
+ padding:8px16px;
+ background: #FF9800;
+ color: white;
+ border: none;
+ border-radius:6px;
+ cursor: pointer;
+ font-size:14px;
+ transition: background0.2s;
+}
+
+.admin-login-btn:hover {
+ background: #F57C00;
+}
+
+.admin-logout-btn {
+ position: absolute;
+ top:20px;
+ right:20px;
+ padding:8px16px;
+ background: #757575;
+ color: white;
+ border: none;
+ border-radius:6px;
+ cursor: pointer;
+ font-size:14px;
+ transition: background0.2s;
+}
+
+.admin-logout-btn:hover {
+ background: #616161;
+}
+
+/* Модальное окно */
+.modal-overlay {
+ display: none;
+ position: fixed;
+ top:0;
+ left:0;
+ width:100%;
+ height:100%;
+ background: rgba(0,0,0,0.5);
+ justify-content: center;
+ align-items: center;
+ z-index:1000;
+}
+
+.modal-overlay.active {
+ display: flex;
+}
+
+.modal {
+ background: white;
+ padding:30px;
+ border-radius:12px;
+ width:90%;
+ max-width:400px;
+ box-shadow:04px20px rgba(0,0,0,0.2);
+}
+
+.modal h2 {
+ margin-bottom:20px;
+ color: #333;
+}
+
+.modal input {
+ width:100%;
+ padding:12px;
+ margin-bottom:12px;
+ border:1px solid #ddd;
+ border-radius:8px;
+ font-size:14px;
+}
+
+.modal button {
+ width:100%;
+ padding:12px;
+ background: #4CAF50;
+ color: white;
+ border: none;
+ border-radius:8px;
+ font-size:16px;
+ cursor: pointer;
+ transition: background0.2s;
+}
+
+.modal button:hover {
+ background: #45a049;
+}
+
+.modal-close {
+ background: #f44336 !important;
+ margin-top:10px;
+}
+
+.modal-close:hover {
+ background: #da190b !important;
+}
+
+/* Основной контент */
 .main-content {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 30px;
+ display: grid;
+ grid-template-columns:1fr1fr;
+ gap:30px;
 }
 
-@media (max-width: 768px) {
-    .main-content {
-        grid-template-columns: 1fr;
-    }
+@media (max-width:768px) {
+ .main-content {
+ grid-template-columns:1fr;
+ }
 }
 
 .panel {
-    background: white;
-    border-radius: 12px;
-    padding: 24px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+ background: white;
+ border-radius:12px;
+ padding:24px;
+ box-shadow:02px8px rgba(0,0,0,0.1);
 }
 
 .panel h2 {
-    color: #555;
-    margin-bottom: 20px;
-    font-size: 18px;
-    padding-bottom: 10px;
-    border-bottom: 2px solid #f0f0f0;
+ color: #555;
+ margin-bottom:20px;
+ font-size:18px;
+ padding-bottom:10px;
+ border-bottom:2px solid #f0f0f0;
 }
 
 .generate-form {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+ display: flex;
+ flex-direction: column;
+ gap:12px;
 }
 
 .generate-form input {
-    padding: 12px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    font-size: 14px;
+ padding:12px;
+ border:1px solid #ddd;
+ border-radius:8px;
+ font-size:14px;
 }
 
 .generate-form button {
-    padding: 12px 24px;
-    background: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background 0.2s;
+ padding:12px24px;
+ background: #4CAF50;
+ color: white;
+ border: none;
+ border-radius:8px;
+ font-size:16px;
+ cursor: pointer;
+ transition: background0.2s;
 }
 
 .generate-form button:hover {
-    background: #45a049;
+ background: #45a049;
 }
 
 #copyBtn {
-    background: #2196F3;
+ background: #2196F3;
 }
 
 #copyBtn:hover {
-    background: #1976D2;
+ background: #1976D2;
 }
 
+/* Список ссылок */
 .slugs-list {
-    list-style: none;
-    max-height: 600px;
-    overflow-y: auto;
+ list-style: none;
+ max-height:600px;
+ overflow-y: auto;
 }
 
 .slug-item {
-    background: #f9f9f9;
-    padding: 12px;
-    margin-bottom: 10px;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    transition: background 0.2s;
+ background: #f9f9f9;
+ padding:12px;
+ margin-bottom:10px;
+ border-radius:8px;
+ display: flex;
+ align-items: center;
+ gap:10px;
+ transition: background0.2s;
 }
 
 .slug-item:hover {
-    background: #f0f0f0;
+ background: #f0f0f0;
 }
 
 .slug-info {
-    flex: 1;
-    min-width: 0;
+ flex:1;
+ min-width:0;
 }
 
 .short-url {
-    font-weight: bold;
-    color: #2196F3;
-    cursor: pointer;
-    text-decoration: underline;
-    font-size: 14px;
-    display: block;
-    margin-bottom: 4px;
+ font-weight: bold;
+ color: #2196F3;
+ cursor: pointer;
+ text-decoration: underline;
+ font-size:14px;
+ display: block;
+ margin-bottom:4px;
 }
 
 .short-url:hover {
-    color: #1976D2;
+ color: #1976D2;
 }
 
 .long-url {
-    font-size: 12px;
-    color: #666;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: block;
+ font-size:12px;
+ color: #666;
+ white-space: nowrap;
+ overflow: hidden;
+ text-overflow: ellipsis;
+ display: block;
+}
+
+.user-id {
+ font-size:11px;
+ color: #999;
+ margin-top:2px;
 }
 
 .delete-btn {
-    padding: 6px 12px;
-    background: #f44336;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 12px;
-    transition: background 0.2s;
-    flex-shrink: 0;
+ padding:6px12px;
+ background: #f44336;
+ color: white;
+ border: none;
+ border-radius:6px;
+ cursor: pointer;
+ font-size:12px;
+ transition: background0.2s;
+ flex-shrink:0;
 }
 
 .delete-btn:hover {
-    background: #da190b;
+ background: #da190b;
 }
 
 .empty {
-    text-align: center;
-    color: #999;
-    padding: 30px;
-    font-size: 14px;
+ text-align: center;
+ color: #999;
+ padding:30px;
+ font-size:14px;
 }
 
+/* Админ-панель */
+.admin-panel {
+ display: none;
+ margin-top:30px;
+}
+
+.admin-panel.active {
+ display: block;
+}
+
+.admin-badge {
+ display: inline-block;
+ background: #FF9800;
+ color: white;
+ padding:4px12px;
+ border-radius:12px;
+ font-size:12px;
+ margin-left:10px;
+}
+
+/* Toast */
 .toast {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #333;
-    color: white;
-    padding: 12px 24px;
-    border-radius: 8px;
-    opacity: 0;
-    transition: opacity 0.3s;
-    pointer-events: none;
-    z-index: 1000;
+ position: fixed;
+ bottom:20px;
+ left:50%;
+ transform: translateX(-50%);
+ background: #333;
+ color: white;
+ padding:12px24px;
+ border-radius:8px;
+ opacity:0;
+ transition: opacity0.3s;
+ pointer-events: none;
+ z-index:1000;
 }
 
 .toast.show {
-    opacity: 1;
+ opacity:1;
 }
 
 .toast.success {
-    background: #4CAF50;
+ background: #4CAF50;
 }
 
 .toast.error {
-    background: #f44336;
+ background: #f44336;
 }
 </style>
 </head>
 <body>
 <div class="container">
-<h1>🔗 Сокращение ссылок</h1>
+ <h1>🔗 Сокращение ссылок</h1>
+ 
+ <button class="admin-login-btn" id="adminLoginBtn" onclick="openLoginModal()">Вход для админа</button>
+ <button class="admin-logout-btn" id="adminLogoutBtn" onclick="adminLogout()" style="display: none;">Выйти</button>
 
-<div class="main-content">
-<div class="panel">
-<h2>➕ Создать ссылку</h2>
-<form class="generate-form" id="generateForm">
-<input type="url" id="urlInput" placeholder="Введите длинную ссылку (https://...)" required>
-<button type="submit">Сократить</button>
-<button type="button" id="copyBtn" style="display: none;">Копировать</button>
-</form>
+ <div class="main-content">
+ <div class="panel">
+ <h2>➕ Создать ссылку</h2>
+ <form class="generate-form" id="generateForm">
+ <input type="url" id="urlInput" placeholder="Введите длинную ссылку (https://...)" required>
+ <button type="submit">Сократить</button>
+ <button type="button" id="copyBtn" style="display: none;">Копировать результат</button>
+ </form>
+ </div>
+
+ <div class="panel">
+ <h2>📋 Мои ссылки</h2>
+ <ul class="slugs-list" id="slugsList"></ul>
+ </div>
+ </div>
+
+ <!-- Админ-панель -->
+ <div class="admin-panel" id="adminPanel">
+ <div class="panel">
+ <h2>👑 Все ссылки в БД <span class="admin-badge">АДМИН</span></h2>
+ <ul class="slugs-list" id="adminSlugsList"></ul>
+ </div>
+ </div>
 </div>
 
-<div class="panel">
-<h2>📋 Мои ссылки</h2>
-<ul class="slugs-list" id="slugsList"></ul>
-</div>
-</div>
+<!-- Модальное окно входа -->
+<div class="modal-overlay" id="loginModal">
+ <div class="modal">
+ <h2>🔐 Вход для администратора</h2>
+ <input type="text" id="loginInput" placeholder="Логин" autocomplete="username">
+ <input type="password" id="passwordInput" placeholder="Пароль" autocomplete="current-password">
+ <button onclick="adminLogin()">Войти</button>
+ <button class="modal-close" onclick="closeLoginModal()">Отмена</button>
+ </div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -218,126 +372,233 @@ h1 {
 <script>
 const API_URL = window.location.origin;
 let lastShortUrl = '';
+let adminToken = localStorage.getItem('admin_token') || null;
 
-// Загрузка слагов
+// === Инициализация ===
+document.addEventListener('DOMContentLoaded', () => {
+ updateAdminUI();
+ loadSlugs();
+});
+
+// === Админ UI ===
+function updateAdminUI() {
+ const loginBtn = document.getElementById('adminLoginBtn');
+ const logoutBtn = document.getElementById('adminLogoutBtn');
+ const adminPanel = document.getElementById('adminPanel');
+ 
+ if (adminToken) {
+ loginBtn.style.display = 'none';
+ logoutBtn.style.display = 'block';
+ adminPanel.classList.add('active');
+ loadAdminSlugs();
+ } else {
+ loginBtn.style.display = 'block';
+ logoutBtn.style.display = 'none';
+ adminPanel.classList.remove('active');
+ }
+}
+
+function openLoginModal() {
+ document.getElementById('loginModal').classList.add('active');
+}
+
+function closeLoginModal() {
+ document.getElementById('loginModal').classList.remove('active');
+ document.getElementById('loginInput').value = '';
+ document.getElementById('passwordInput').value = '';
+}
+
+async function adminLogin() {
+ const login = document.getElementById('loginInput').value.trim();
+ const password = document.getElementById('passwordInput').value;
+ 
+ if (!login || !password) {
+ showToast('Введите логин и пароль', 'error');
+ return;
+ }
+ 
+ try {
+ const response = await fetch(`${API_URL}/auth/login`, {
+ method: 'POST',
+ headers: { 'Content-Type': 'application/json' },
+ body: JSON.stringify({ login, password })
+ });
+ 
+ if (response.ok) {
+ const data = await response.json();
+ adminToken = data.access_token;
+ localStorage.setItem('admin_token', adminToken);
+ closeLoginModal();
+ updateAdminUI();
+ showToast('Вход выполнен!', 'success');
+ } else {
+ const error = await response.json();
+ showToast(error.detail || 'Неверный логин или пароль', 'error');
+ }
+ } catch (e) {
+ showToast('Ошибка сети', 'error');
+ }
+}
+
+function adminLogout() {
+ adminToken = null;
+ localStorage.removeItem('admin_token');
+ updateAdminUI();
+ showToast('Вы вышли из системы', 'success');
+}
+
+// === Загрузка ссылок пользователя ===
 async function loadSlugs() {
-    try {
-        const response = await fetch(`${API_URL}/my_slugs`);
-        const slugs = await response.json();
-        renderSlugs(slugs);
-    } catch (e) {
-        console.error('Ошибка загрузки:', e);
-    }
+ try {
+ const response = await fetch(`${API_URL}/my_slugs`);
+ const slugs = await response.json();
+ renderSlugs(slugs);
+ } catch (e) {
+ console.error('Ошибка загрузки:', e);
+ }
 }
 
-// Отрисовка слагов
 function renderSlugs(slugs) {
-    const list = document.getElementById('slugsList');
-    
-    if (slugs.length === 0) {
-        list.innerHTML = '<li class="empty">Ссылок пока нет</li>';
-        return;
-    }
-    
-    list.innerHTML = slugs.map(slug => `
-        <li class="slug-item">
-            <div class="slug-info">
-                <span class="short-url" onclick="copyShortUrl('${slug.slug}')" title="Нажмите, чтобы скопировать">${API_URL}/${slug.slug}</span>
-                <span class="long-url" title="${escapeHtml(slug.long_url)}">${escapeHtml(slug.long_url)}</span>
-            </div>
-            <button class="delete-btn" onclick="deleteSlug('${slug.slug}')">Удалить</button>
-        </li>
-    `).join('');
+ const list = document.getElementById('slugsList');
+ 
+ if (slugs.length ===0) {
+ list.innerHTML = '<li class="empty">Ссылок пока нет</li>';
+ return;
+ }
+ 
+ list.innerHTML = slugs.map(slug => `
+ <li class="slug-item">
+ <div class="slug-info">
+ <span class="short-url" onclick="copyShortUrl('${slug.slug}')" title="Нажмите, чтобы скопировать">${API_URL}/${slug.slug}</span>
+ <span class="long-url" title="${escapeHtml(slug.long_url)}">${escapeHtml(slug.long_url)}</span>
+ </div>
+ <button class="delete-btn" onclick="deleteSlug('${slug.slug}')">Удалить</button>
+ </li>
+ `).join('');
 }
 
-// Экранирование HTML
+// === Загрузка всех ссылок (админ) ===
+async function loadAdminSlugs() {
+ if (!adminToken) return;
+ 
+ try {
+ const response = await fetch(`${API_URL}/admin/slugs`, {
+ headers: { 'Authorization': `Bearer ${adminToken}` }
+ });
+ 
+ if (response.ok) {
+ const slugs = await response.json();
+ renderAdminSlugs(slugs);
+ } else if (response.status ===401) {
+ adminLogout();
+ showToast('Сессия истекла, войдите заново', 'error');
+ }
+ } catch (e) {
+ console.error('Ошибка загрузки админ-данных:', e);
+ }
+}
+
+function renderAdminSlugs(slugs) {
+ const list = document.getElementById('adminSlugsList');
+ 
+ if (slugs.length ===0) {
+ list.innerHTML = '<li class="empty">В базе данных нет ссылок</li>';
+ return;
+ }
+ 
+ list.innerHTML = slugs.map(slug => `
+ <li class="slug-item">
+ <div class="slug-info">
+ <span class="short-url" onclick="copyShortUrl('${slug.slug}')" title="Нажмите, чтобы скопировать">${API_URL}/${slug.slug}</span>
+ <span class="long-url" title="${escapeHtml(slug.long_url)}">${escapeHtml(slug.long_url)}</span>
+ <span class="user-id">👤 ${slug.user_id}</span>
+ </div>
+ </li>
+ `).join('');
+}
+
+// === Утилиты ===
 function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
+ const div = document.createElement('div');
+ div.textContent = text;
+ return div.innerHTML;
 }
 
-// Показать уведомление
 function showToast(message, type = 'success') {
-    const toast = document.getElementById('toast');
-    toast.textContent = message;
-    toast.className = 'toast show ' + type;
-    setTimeout(() => toast.classList.remove('show'), 2500);
+ const toast = document.getElementById('toast');
+ toast.textContent = message;
+ toast.className = 'toast show ' + type;
+ setTimeout(() => toast.classList.remove('show'),2500);
 }
 
-// Копирование короткой ссылки
 function copyShortUrl(slug) {
-    const shortUrl = `${API_URL}/${slug}`;
-    navigator.clipboard.writeText(shortUrl).then(() => {
-        showToast('Ссылка скопирована!', 'success');
-    }).catch(() => {
-        showToast('Не удалось скопировать', 'error');
-    });
+ const shortUrl = `${API_URL}/${slug}`;
+ navigator.clipboard.writeText(shortUrl).then(() => {
+ showToast('Ссылка скопирована!', 'success');
+ }).catch(() => {
+ showToast('Не удалось скопировать', 'error');
+ });
 }
 
-// Копирование последней созданной ссылки
-document.getElementById('copyBtn').addEventListener('click', () => {
-    if (lastShortUrl) {
-        navigator.clipboard.writeText(lastShortUrl).then(() => {
-            showToast('Ссылка скопирована!', 'success');
-        }).catch(() => {
-            showToast('Не удалось скопировать', 'error');
-        });
-    }
-});
-
-// Создание короткой ссылки
+// === Создание ссылки ===
 document.getElementById('generateForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const input = document.getElementById('urlInput');
-    const url = input.value.trim();
-    
-    if (!url) return;
-    
-    try {
-        const response = await fetch(`${API_URL}/generate_short_url`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ url: url })
-        });
-        
-        if (response.ok) {
-            const result = await response.json();
-            lastShortUrl = `${API_URL}/${result.data}`;
-            document.getElementById('copyBtn').style.display = 'block';
-            showToast(`Ссылка создана: ${lastShortUrl}`, 'success');
-            loadSlugs();
-        } else {
-            const error = await response.json();
-            showToast(error.detail || 'Ошибка', 'error');
-        }
-    } catch (e) {
-        showToast('Ошибка сети', 'error');
-    }
+ e.preventDefault();
+ const input = document.getElementById('urlInput');
+ const url = input.value.trim();
+ 
+ if (!url) return;
+ 
+ try {
+ const response = await fetch(`${API_URL}/generate_short_url`, {
+ method: 'POST',
+ headers: { 'Content-Type': 'application/json' },
+ body: JSON.stringify({ url: url })
+ });
+ 
+ if (response.ok) {
+ const result = await response.json();
+ lastShortUrl = `${API_URL}/${result.data}`;
+ document.getElementById('copyBtn').style.display = 'block';
+ showToast(`Ссылка создана`, 'success');
+ loadSlugs();
+ } else {
+ const error = await response.json();
+ showToast(error.detail || 'Ошибка', 'error');
+ }
+ } catch (e) {
+ showToast('Ошибка сети', 'error');
+ }
 });
 
-// Удаление ссылки
-async function deleteSlug(slug) {
-    if (!confirm('Удалить эту ссылку?')) return;
-    
-    try {
-        const response = await fetch(`${API_URL}/delete_slug/${slug}`, {
-            method: 'DELETE'
-        });
-        
-        if (response.ok) {
-            showToast('Ссылка удалена', 'success');
-            loadSlugs();
-        } else {
-            showToast('Не удалось удалить', 'error');
-        }
-    } catch (e) {
-        showToast('Ошибка сети', 'error');
-    }
-}
+document.getElementById('copyBtn').addEventListener('click', () => {
+ if (lastShortUrl) {
+ navigator.clipboard.writeText(lastShortUrl).then(() => {
+ showToast('Ссылка скопирована!', 'success');
+ }).catch(() => {
+ showToast('Не удалось скопировать', 'error');
+ });
+ }
+});
 
-// Загрузка при старте
-loadSlugs();
+// === Удаление ссылки ===
+async function deleteSlug(slug) {
+ if (!confirm('Удалить эту ссылку?')) return;
+ 
+ try {
+ const response = await fetch(`${API_URL}/delete_slug/${slug}`, {
+ method: 'DELETE'
+ });
+ 
+ if (response.ok) {
+ showToast('Ссылка удалена', 'success');
+ loadSlugs();
+ } else {
+ showToast('Не удалось удалить', 'error');
+ }
+ } catch (e) {
+ showToast('Ошибка сети', 'error');
+ }
+}
 </script>
 </body>
 </html>

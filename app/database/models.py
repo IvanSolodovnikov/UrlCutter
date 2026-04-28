@@ -12,3 +12,9 @@ class ShortUrl(Base):
     slug: Mapped[str] = mapped_column(primary_key=True)
     long_url: Mapped[str]
     user_id: Mapped[str]
+
+class Admin(Base):
+    __tablename__ = "admins"
+
+    login: Mapped[str] = mapped_column(primary_key=True)
+    password: Mapped[str] = mapped_column(nullable=False)

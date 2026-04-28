@@ -7,6 +7,9 @@ dependencies = [
     "asyncpg>=0.31.0",
     "fastapi",
     "greenlet>=3.3.1",
+    "bcrypt==4.0.1",
+    "passlib[bcrypt]>=1.7.4",
     "sqlalchemy>=2.0.46",
     "uvicorn",
+    "python-jose>=3.5.0",
 ]

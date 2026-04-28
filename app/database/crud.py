@@ -1,5 +1,5 @@
 from .db import new_session
-from .models import ShortUrl
+from .models import ShortUrl, Admin
 from sqlalchemy import select, delete
 from sqlalchemy.exc import IntegrityError
 
@@ -51,3 +51,20 @@ async def get_all_slugs_by_user_id(user_id: str) -> list[ShortUrl]:
         result = await session.execute(query)
         return list(result.scalars().all())
 
+
+async def get_all_slugs() -> list[ShortUrl]:
+    async with new_session() as session:
+        query = select(ShortUrl)
+        result = await session.execute(query)
+        return list(result.scalars().all())
+
+async def get_admin_by_login(login: str):
+    async with new_session() as session:
+        query = select(Admin).where(
+            Admin.login == login
+        )
+
+        result = await session.execute(query)
+        admin = result.scalar_one_or_none()
+
+        return admin

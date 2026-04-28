@@ -1,5 +1,4 @@
 from http.client import HTTPException
-from typing import Annotated
 
 from fastapi import FastAPI, Depends, Body, status, HTTPException
 from fastapi.responses import RedirectResponse
@@ -12,8 +11,9 @@ from pydantic import HttpUrl
 from .database.db import engine
 from .database.models import Base
 from .exeptions import NoLongUrlFoundError, SlugAlreadyExistsError
-from .service import generate_rnd_short_url, get_url_by_slug, delete_slug, get_user_slugs
-from .dependencies.dependencies import get_or_create_user_id
+from .service import generate_rnd_short_url, get_url_by_slug, delete_slug, get_user_slugs, get_all_slugs_admin
+from .dependencies.dependencies import get_or_create_user_id, get_current_admin
+from .auth.routers import router as admin_login
 
 
 @asynccontextmanager
@@ -26,6 +26,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
+app.include_router(admin_login)
 
 
 @app.get("/")
@@ -49,10 +50,15 @@ async def get_slugs(user_id: str = Depends(get_or_create_user_id)):
     return await get_user_slugs(user_id)
 
 
+@app.get("/admin/slugs")
+async def admin_get_all_slugs(admin_login: str = Depends(get_current_admin)):
+    return await get_all_slugs_admin()
+
+
 @app.delete("/delete_slug/{slug}")
 async def delete_slug_by_user(slug: str,
-                              user_id: str = Depends(get_or_create_user_id)):
-    await delete_slug(slug, user_id)
+ user_id: str = Depends(get_or_create_user_id)):
+ await delete_slug(slug, user_id)
 
 
 @app.get("/{slug}")

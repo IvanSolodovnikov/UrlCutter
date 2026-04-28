@@ -1,4 +1,4 @@
-from .database.crud import add_slug_to_db, get_long_url_by_slug_from_db, delete_slug_by_user_id, get_all_slugs_by_user_id
+from .database.crud import add_slug_to_db, get_long_url_by_slug_from_db, delete_slug_by_user_id, get_all_slugs_by_user_id, get_all_slugs
 from .shortener import generate_slug
 from .exeptions import NoLongUrlFoundError, SlugAlreadyExistsError
 
@@ -34,3 +34,9 @@ async  def delete_slug(slug: str,
 async def get_user_slugs(user_id: str) -> list[dict]:
     slugs = await get_all_slugs_by_user_id(user_id)
     return [{"slug": s.slug, "long_url": s.long_url} for s in slugs]
+
+
+async def get_all_slugs_admin() -> list[dict]:
+    slugs = await get_all_slugs()
+    return [{"slug": s.slug, "long_url": s.long_url, "user_id": s.user_id} for s in slugs]
+
