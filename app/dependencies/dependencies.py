@@ -3,6 +3,7 @@ import uuid
 from fastapi import Request, Response, HTTPException, status
 
 from app.auth.jwt import decode_admin_token
+from app.database.crud import get_admin_by_login
 
 
 def get_or_create_user_id(request: Request, response: Response) -> str:
@@ -30,8 +31,10 @@ async def get_current_admin(request: Request) -> str:
 
     token = auth_header.split(" ")[1]
     payload = decode_admin_token(token)
+    print(payload)
+    correct_admin_login = await get_admin_by_login(payload["sub"])
 
-    if not payload or not payload.get("sub"):
+    if not payload or not payload.get("sub") or not correct_admin_login:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Недействительный токен"

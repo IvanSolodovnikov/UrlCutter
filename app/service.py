@@ -1,6 +1,9 @@
-from .database.crud import add_slug_to_db, get_long_url_by_slug_from_db, delete_slug_by_user_id, get_all_slugs_by_user_id, get_all_slugs
+from .database.crud import (add_slug_to_db, get_long_url_by_slug_from_db, delete_slug_by_user_id,
+                            get_all_slugs_by_user_id, get_all_slugs, get_slugs_by_url_from_db, get_slug_from_db,
+                            get_slugs_by_user_id_from_db)
+from .database.models import ShortUrl
 from .shortener import generate_slug
-from .exeptions import NoLongUrlFoundError, SlugAlreadyExistsError
+from .exeptions import NoLongUrlFoundError, SlugAlreadyExistsError, SlugDoesntExistError
 
 
 async def generate_rnd_short_url(
@@ -38,5 +41,23 @@ async def get_user_slugs(user_id: str) -> list[dict]:
 
 async def get_all_slugs_admin() -> list[dict]:
     slugs = await get_all_slugs()
+    return [{"slug": s.slug, "long_url": s.long_url, "user_id": s.user_id} for s in slugs]
+
+async def get_slug(slug:str) -> ShortUrl | None:
+    slug = await get_slug_from_db(slug)
+    if not slug:
+        raise SlugDoesntExistError()
+    return slug
+
+async def get_slugs_by_url(url:str) -> list[ShortUrl] | None:
+    slugs = await get_slugs_by_url_from_db(url)
+    if not slugs:
+        raise SlugDoesntExistError()
+    return slugs
+
+async def get_slugs_by_user_id(user_id: str) -> list[dict] | None:
+    slugs = await get_slugs_by_user_id_from_db(user_id)
+    if not slugs:
+        raise SlugDoesntExistError()
     return [{"slug": s.slug, "long_url": s.long_url, "user_id": s.user_id} for s in slugs]
 
