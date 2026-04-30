@@ -12,7 +12,7 @@ from .database.db import engine
 from .database.models import Base
 from .exeptions import NoLongUrlFoundError, SlugAlreadyExistsError
 from .service import generate_rnd_short_url, get_url_by_slug, delete_slug, get_user_slugs, get_all_slugs_admin, \
-    get_slug, get_slugs_by_url, get_slugs_by_user_id
+    get_slug, get_slugs_by_url, get_slugs_by_user_id, get_slugs_by_filters
 from .dependencies.dependencies import get_or_create_user_id, get_current_admin
 from .auth.routers import router as admin_login
 
@@ -50,6 +50,12 @@ async def generate_short_url(url: str = Body(embed=True),
 async def get_my_slugs(user_id: str = Depends(get_or_create_user_id)):
     return await get_user_slugs(user_id)
 
+@app.get("/admin/search_slugs")
+async def admin_get_slugs_by_filters(slug: str | None = None,
+                                     url: str | None = None,
+                                     user_id: str | None = None,
+                                     admin_login: str = Depends(get_current_admin)):
+    await get_slugs_by_filters(slug, url, user_id)
 
 @app.get("/admin/slugs")
 async def admin_get_all_slugs(admin_login: str = Depends(get_current_admin)):
@@ -61,7 +67,7 @@ async def admin_get_slug(slug: str,
                         ):
     return await get_slug(slug)
 
-@app.get("/admin/get_slugs_by_url/{url}")
+@app.get("/admin/get_slugs_by_url/")
 async def admin_get_slugs_by_url(url: str,
                                  admin_login: str = Depends(get_current_admin)
                                  ):

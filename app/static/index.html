@@ -351,6 +351,20 @@ h1 {
  <div class="admin-panel" id="adminPanel">
  <div class="panel">
  <h2>👑 Все ссылки в БД <span class="admin-badge">АДМИН</span></h2>
+
+ <div style="display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;">
+ <input type="text" id="searchBySlug" placeholder="Поиск по slug" style="flex: 1; min-width: 150px; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
+ <button onclick="searchBySlug()" style="padding: 8px 16px; background: #2196F3; color: white; border: none; border-radius: 6px; cursor: pointer;">Найти</button>
+
+ <input type="text" id="searchByUserId" placeholder="По user_id" style="flex: 1; min-width: 150px; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
+ <button onclick="searchByUserId()" style="padding: 8px 16px; background: #2196F3; color: white; border: none; border-radius: 6px; cursor: pointer;">Найти</button>
+
+ <input type="text" id="searchByUrl" placeholder="По URL" style="flex: 2; min-width: 200px; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
+ <button onclick="searchByUrl()" style="padding: 8px 16px; background: #2196F3; color: white; border: none; border-radius: 6px; cursor: pointer;">Найти</button>
+
+ <button onclick="loadAdminSlugs()" style="padding: 8px 16px; background: #4CAF50; color: white; border: none; border-radius: 6px; cursor: pointer;">Сброс</button>
+ </div>
+
  <ul class="slugs-list" id="adminSlugsList"></ul>
  </div>
  </div>
@@ -592,8 +606,92 @@ async function deleteSlug(slug) {
  if (response.ok) {
  showToast('Ссылка удалена', 'success');
  loadSlugs();
+ if (adminToken) loadAdminSlugs();
  } else {
  showToast('Не удалось удалить', 'error');
+ }
+ } catch (e) {
+ showToast('Ошибка сети', 'error');
+ }
+}
+
+// === Админ: Поиск по slug ===
+async function searchBySlug() {
+ const slug = document.getElementById('searchBySlug').value.trim();
+ if (!slug) {
+ loadAdminSlugs();
+ return;
+ }
+
+ try {
+ const response = await fetch(`${API_URL}/admin/${slug}`, {
+ headers: { 'Authorization': `Bearer ${adminToken}` }
+ });
+
+ if (response.ok) {
+ const data = await response.json();
+ renderAdminSlugs([data]);
+ } else if (response.status === 404) {
+ document.getElementById('adminSlugsList').innerHTML = '<li class="empty">Slug не найден</li>';
+ } else if (response.status === 401) {
+ adminLogout();
+ showToast('Сессия истекла', 'error');
+ } else {
+ showToast('Ошибка поиска', 'error');
+ }
+ } catch (e) {
+ showToast('Ошибка сети', 'error');
+ }
+}
+
+// === Админ: Поиск по user_id ===
+async function searchByUserId() {
+ const userId = document.getElementById('searchByUserId').value.trim();
+ if (!userId) {
+ loadAdminSlugs();
+ return;
+ }
+
+ try {
+ const response = await fetch(`${API_URL}/admin/get_slugs_by_user_id/${userId}`, {
+ headers: { 'Authorization': `Bearer ${adminToken}` }
+ });
+
+ if (response.ok) {
+ const slugs = await response.json();
+ renderAdminSlugs(slugs);
+ } else if (response.status === 401) {
+ adminLogout();
+ showToast('Сессия истекла', 'error');
+ } else {
+ showToast('Ошибка поиска', 'error');
+ }
+ } catch (e) {
+ showToast('Ошибка сети', 'error');
+ }
+}
+
+// === Админ: Поиск по URL ===
+async function searchByUrl() {
+ const url = document.getElementById('searchByUrl').value.trim();
+ if (!url) {
+ loadAdminSlugs();
+ return;
+ }
+
+ try {
+ const response = await fetch(`${API_URL}/admin/get_slugs_by_url/?url=${encodeURIComponent(url)}`, {
+ headers: { 'Authorization': `Bearer ${adminToken}` }
+ });
+
+ if (response.ok) {
+ const slugs = await response.json();
+ renderAdminSlugs(slugs);
+ } else if (response.status === 401) {
+ adminLogout();
+ showToast('Сессия истекла', 'error');
+ } else {
+ showToast('Ошибка поиска', 'error');
  }
  } catch (e) {
  showToast('Ошибка сети', 'error');

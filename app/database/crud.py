@@ -1,6 +1,6 @@
 from .db import new_session
 from .models import ShortUrl, Admin
-from sqlalchemy import select, delete
+from sqlalchemy import select, delete, and_
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
 from ..exeptions import SlugAlreadyExistsError, SlugDoesntExistError
@@ -95,6 +95,28 @@ async def get_slugs_by_user_id_from_db(user_id: str) -> list[ShortUrl] | None:
     async with new_session() as session:
         try:
             query = select(ShortUrl).where(ShortUrl.user_id == user_id)
+
+            result = await session.execute(query)
+        except SQLAlchemyError:
+            return None
+
+        return list(result.scalars().all())
+
+async def get_slugs_by_filters_from_db(slug: str,
+                                       url: str,
+                                       user_id: str) -> list[ShortUrl] | None:
+    async with new_session() as session:
+        try:
+            conditions = []
+
+            if slug is not None:
+                conditions.append(ShortUrl.slug == slug)
+            if url is not None:
+                conditions.append(ShortUrl.long_url == url)
+            if user_id is not None:
+                conditions.append(ShortUrl.user_id == user_id)
+            if conditions:
+                query = select(ShortUrl).where(and_(*conditions))
 
             result = await session.execute(query)
         except SQLAlchemyError:
