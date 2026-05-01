@@ -13,3 +13,9 @@ class SlugAlreadyExistsError(ShortenerBaseError):
 
 class SlugDoesntExistError(ShortenerBaseError):
     pass
+
+class DatabaseError(ShortenerBaseError):
+    pass
+
+class SlugNotAvailableError(ShortenerBaseError):
+    pass

@@ -31,13 +31,19 @@ async def get_current_admin(request: Request) -> str:
 
     token = auth_header.split(" ")[1]
     payload = decode_admin_token(token)
-    print(payload)
-    correct_admin_login = await get_admin_by_login(payload["sub"])
 
-    if not payload or not payload.get("sub") or not correct_admin_login:
+    if not payload or not payload.get("sub"):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Недействительный токен"
+            detail="Недействительный токен"
+        )
+
+    correct_admin_login = await get_admin_by_login(payload["sub"])
+
+    if not correct_admin_login:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Недействительный токен"
         )
 
     return payload["sub"]

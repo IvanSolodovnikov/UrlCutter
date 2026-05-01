@@ -1,9 +1,10 @@
 from .db import new_session
 from .models import ShortUrl, Admin
-from sqlalchemy import select, delete, and_
+from sqlalchemy import select, delete, and_, update
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
-from ..exeptions import SlugAlreadyExistsError, SlugDoesntExistError
+from ..exeptions import SlugAlreadyExistsError, SlugDoesntExistError, DatabaseError, SlugNotAvailableError, \
+    NoLongUrlFoundError
 
 
 async def add_slug_to_db(
@@ -28,7 +29,12 @@ async def get_long_url_by_slug_from_db(slug: str) -> str|None:
         query = select(ShortUrl).filter_by(slug=slug)
         result = await session.execute(query)
         res: ShortUrl | None = result.scalar_one_or_none()
+        if not res:
+            raise NoLongUrlFoundError()
+        if not res.available:
+            raise SlugNotAvailableError()
         return res.long_url if res else None
+
 
 async def delete_slug_by_user_id(slug: str, user_id: str):
     async with new_session() as session:
@@ -42,12 +48,6 @@ async def delete_slug_by_user_id(slug: str, user_id: str):
             await session.commit()
         except Exception:
             raise SlugDoesntExistError
-
-async def get_all_slugs() -> list[ShortUrl]:
-    async with new_session() as session:
-        query = select(ShortUrl)
-        result = await session.execute(query)
-        return list(result.scalars().all())
 
 async def get_all_slugs_by_user_id(user_id: str) -> list[ShortUrl]:
     async with new_session() as session:
@@ -69,42 +69,9 @@ async def get_admin_by_login(login: str):
 
         return admin
 
-async def get_slug_from_db(slug:str) -> ShortUrl | None:
-    async with new_session() as session:
-        try:
-            query = select(ShortUrl).where(ShortUrl.slug == slug)
-
-            result = await session.execute(query)
-        except SQLAlchemyError:
-            return None
-
-        return  result.scalar_one_or_none()
-
-async def get_slugs_by_url_from_db(url: str) -> list[ShortUrl] | None:
-    async with new_session() as session:
-        try:
-            query = select(ShortUrl).where(ShortUrl.long_url == url)
-
-            result = await session.execute(query)
-        except SQLAlchemyError:
-            return None
-
-        return list(result.scalars().all())
-
-async def get_slugs_by_user_id_from_db(user_id: str) -> list[ShortUrl] | None:
-    async with new_session() as session:
-        try:
-            query = select(ShortUrl).where(ShortUrl.user_id == user_id)
-
-            result = await session.execute(query)
-        except SQLAlchemyError:
-            return None
-
-        return list(result.scalars().all())
-
-async def get_slugs_by_filters_from_db(slug: str,
-                                       url: str,
-                                       user_id: str) -> list[ShortUrl] | None:
+async def get_slugs_by_filters_from_db(slug: str | None = None,
+                                       url: str | None = None,
+                                       user_id: str | None = None) -> list[ShortUrl]:
     async with new_session() as session:
         try:
             conditions = []
@@ -115,11 +82,48 @@ async def get_slugs_by_filters_from_db(slug: str,
                 conditions.append(ShortUrl.long_url == url)
             if user_id is not None:
                 conditions.append(ShortUrl.user_id == user_id)
+
+            query = select(ShortUrl)
             if conditions:
-                query = select(ShortUrl).where(and_(*conditions))
+                query = query.where(and_(*conditions))
 
             result = await session.execute(query)
         except SQLAlchemyError:
             return None
 
         return list(result.scalars().all())
+
+async def delete_slug_by_admin_from_db(slug: str):
+    async with new_session() as session:
+        query = delete(ShortUrl).where(
+            ShortUrl.slug == slug,
+        )
+        await session.execute(query)
+
+        try:
+            await session.commit()
+        except Exception:
+            raise SlugDoesntExistError
+
+async def slug_block_in_db(slug: str):
+    async with new_session() as session:
+        query_select = select(ShortUrl.available).where(ShortUrl.slug == slug)
+        result = await session.execute(query_select)
+        current_available = result.scalar_one_or_none()
+
+        if current_available is None:
+            raise SlugDoesntExistError(f"Slug '{slug}' не существует")
+
+        new_available = not current_available
+
+        query = update(ShortUrl).where(
+            ShortUrl.slug == slug
+        ).values(available=new_available)
+
+        await session.execute(query)
+
+        try:
+            await session.commit()
+        except Exception:
+            await session.rollback()
+            raise DatabaseError(f"Не удалось переключить статус slug '{slug}'")
